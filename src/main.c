@@ -1,89 +1,66 @@
+// Libraries?
 #include "raylib.h"
-#include "second.h"
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 
-#if defined(PLATFORM_WEB)
-    #include <emscripten/emscripten.h>
-#endif
+// Header Files
+// Iteration 1
+#include "include/utils.h"
+#include "include/menu.h"
+// Iteration 2
+#include "include/settings.h"
+#include "include/blocks.h"
+// Iteration 3
+// Morse Utils
 
-//----------------------------------------------------------------------------------
-// Local Variables Definition (local to this module)
-//----------------------------------------------------------------------------------
-Camera camera = { 0 };
-Vector3 cubePosition = { 0 };
+// Temp
+#include "include/temp.h"
+#include "include/lesson.h"
 
-//----------------------------------------------------------------------------------
-// Local Functions Declaration
-//----------------------------------------------------------------------------------
-static void UpdateDrawFrame(void);          // Update and draw one frame
+#include "../resources/custom.h"
 
-//----------------------------------------------------------------------------------
-// Main entry point
-//----------------------------------------------------------------------------------
-int main()
+// Definitons
+
+typedef enum 
+{   LESSON_SCREEN = 1, PRACTICE_SCREEN, ONLINE_SCREEN, STATISTICS_SCREEN, SETTINGS_SCREEN, TESTING_SCREEN} ScreenType;
+
+//------------------------------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
+int main(void)
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    Config config = GetConfig();
 
-    InitWindow(screenWidth, screenHeight, "raylib");
+    InitWindow(config.screenWidth, config.screenHeight, "Tapper");
+    SetExitKey(KEY_NULL); // Disables escape as a close button
+    SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+    GuiLoadStyleCustom();
 
-    camera.position = (Vector3){ 10.0f, 10.0f, 8.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 60.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    ScreenType currentScreen = 0;
 
-    //--------------------------------------------------------------------------------------
+    Block blocks[NUM_OF_ROWS][MAX_SIZE];
 
-#if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
-#else
-    SetTargetFPS(100000);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+    InitAllBlocks(NUM_OF_ROWS, blocks);
 
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+
+    // Main loop
+    while (!WindowShouldClose())    // Detect window close button
     {
-        UpdateDrawFrame();
-    }
-#endif
+        currentScreen = Menu(blocks);
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();                  // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+        switch (currentScreen)
+        {
+            case LESSON_SCREEN:     Lesson();               break;
+            case PRACTICE_SCREEN:   Practice();             break;
+            case ONLINE_SCREEN:     Online();               break;
+            case STATISTICS_SCREEN: Statistics();           break;
+            case SETTINGS_SCREEN:   Settings(config, blocks);       config = GetConfig();       break;
+            case TESTING_SCREEN:    Testing();              break;
+            default:                break;
+        }
+    }
+        
+    CloseWindow();
 
     return 0;
-}
-
-// Update and draw game frame
-static void UpdateDrawFrame(void)
-{
-    // Update
-    //----------------------------------------------------------------------------------
-    UpdateCamera(&camera, CAMERA_ORBITAL);
-    //----------------------------------------------------------------------------------
-
-    // Draw
-    //----------------------------------------------------------------------------------
-    BeginDrawing();
-        Fun1();
-
-        ClearBackground(RAYWHITE);
-
-        BeginMode3D(camera);
-
-            DrawCube(cubePosition, 2.0f, 2.0f, 2.0f, RED);
-            DrawCubeWires(cubePosition, 2.0f, 2.0f, 2.0f, MAROON);
-            DrawGrid(10, 1.0f);
-
-        EndMode3D();
-
-        DrawText("This is a raylib example", 10, 40, 20, DARKGRAY);
-
-        DrawFPS(10, 10);
-
-    EndDrawing();
-    //----------------------------------------------------------------------------------
 }

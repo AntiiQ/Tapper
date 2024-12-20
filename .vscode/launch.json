@@ -31,6 +31,20 @@
             "preLaunchTask": "build debug"
           },
           {
+            "name": "Run Without Debugging",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/main",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true, // Set to true if you want an external console to open.
+            "MIMode": "gdb",
+            "noDebug": true, // This line ensures the debugger doesn't start.
+            "preLaunchTask": "build debug"
+          },
+          {
             "name": "Run",
             "type": "cppdbg",
             "request": "launch",
