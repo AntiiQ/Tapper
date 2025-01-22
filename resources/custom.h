@@ -11,12 +11,14 @@
 //                                                                              //
 //////////////////////////////////////////////////////////////////////////////////
 
-#define CUSTOM_STYLE_PROPS_COUNT  35
+#define CUSTOM_STYLE_PROPS_COUNT  46
 
 // Custom style name: Custom
 static const GuiStyleProp customStyleProps[CUSTOM_STYLE_PROPS_COUNT] = {
     { 0, 0, 0xef0e0eff },    // DEFAULT_BORDER_COLOR_NORMAL 
-    { 0, 8, 0x2c6076ff },    // DEFAULT_TEXT_COLOR_PRESSED 
+    { 0, 2, 0x6e6a86ff },    // DEFAULT_TEXT_COLOR_NORMAL 
+    { 0, 5, 0xe0def4ff },    // DEFAULT_TEXT_COLOR_FOCUSED 
+    { 0, 8, 0xf6c177ff },    // DEFAULT_TEXT_COLOR_PRESSED 
     { 0, 18, 0x84d8d8ff },    // DEFAULT_LINE_COLOR 
     { 0, 19, 0x1f1d2eff },    // DEFAULT_BACKGROUND_COLOR 
     { 1, 12, 0x00000000 },    // LABEL_BORDER_WIDTH 
@@ -41,6 +43,16 @@ static const GuiStyleProp customStyleProps[CUSTOM_STYLE_PROPS_COUNT] = {
     { 4, 6, 0xe0def4ff },    // SLIDER_BORDER_COLOR_PRESSED 
     { 4, 7, 0x524f67ff },    // SLIDER_BASE_COLOR_PRESSED 
     { 4, 8, 0xf6c177ff },    // SLIDER_TEXT_COLOR_PRESSED 
+
+    { 6, 0, 0x6e6a86ff },    // CHECKBOX_BORDER_COLOR_NORMAL
+    { 6, 1, 0x6e6a86ff },    // CHECKBOX_BASE_COLOR_NORMAL
+    { 6, 2, 0x6e6a86ff },    // CHECKBOX_TEXT_COLOR_NORMAL 
+    { 6, 3, 0xe0def4ff },    // CHECKBOX_BORDER_COLOR_FOCUSED 
+    { 6, 4, 0xe0def4ff },    // CHECKBOX_BASE_COLOR_FOCUSED 
+    { 6, 5, 0xe0def4ff },    // CHECKBOX_TEXT_COLOR_FOCUSED 
+    { 6, 6, 0xf6c177ff },    // CHECKBOX_BORDER_COLOR_PRESSED 
+    { 6, 7, 0xf6c177ff },    // CHECKBOX_BASE_COLOR_PRESSED 
+    { 6, 8, 0xf6c177ff },    // CHECKBOX_TEXT_COLOR_PRESSED 
 
     { 8, 0, 0x6e6a86ff },    // DROPDOWNBOX_BORDER_COLOR_NORMAL 
     { 8, 1, 0x1f1d2eff },    // DROPDOWNBOX_BASE_COLOR_NORMAL 

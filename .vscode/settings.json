@@ -24,7 +24,9 @@
 		"functional": "c",
 		"stddef.h": "c",
 		"stdlib.h": "c",
-		"morseutils.h": "c"
+		"morseutils.h": "c",
+		"string_view": "c",
+		"typeinfo": "c"
 	},
 	"C_Cpp.dimInactiveRegions": false,
 	"makefile.configureOnOpen": false

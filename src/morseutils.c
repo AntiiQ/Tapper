@@ -236,6 +236,7 @@ void EncodeTextStr(const char *text, char* result, size_t resultSize)
                 pos += morseLen;
             }else{
                 // Prevents overflow
+                fprintf(stderr, "ERROR: EncodeTextStr() doesn't have enough space fro result");
                 result[pos] = '\0'; // Null-terminate in case of truncation
                 break;
             }
@@ -297,32 +298,104 @@ void FreeAudio(AudioStream* stream)
 /* HELD INPUT TO MORSE */
 /*-------------------------------------------------------------------------*/
 
-char TimeToMorse(float *heldTime, float *unheldTime, float morseUnit)
+void updateMorseInput(MorseState* state, float morseUnit) 
 {
-    if (*unheldTime > 3 * morseUnit){
-        *unheldTime = 0.0;
-        return ' ';
-    }else if (*heldTime > 3 * morseUnit && *unheldTime > 0){
-        *heldTime = 0.0;
-        return '-';
-    }else if (*heldTime > 0 && *unheldTime > 0){
-        *heldTime = 0.0;
-        return '.';
+    float deltaTime = GetFrameTime();
+    bool isKeyPressed = IsKeyDown(KEY_SPACE) + IsKeyDown(KEY_KP_DECIMAL);
+    
+    // Initialize key press tracking
+    if (isKeyPressed && !state->wasKeyPressed) {
+        // If we've waited long enough since last release, add word separator
+        if (state->releaseTime >= 7 * morseUnit && state->length > 0) {
+            if (state->length + 4 >= state->capacity) {  // Need space for " / "
+                state->capacity *= 2;
+                state->morseString = realloc(state->morseString, state->capacity);
+            }
+            // Add " / " word separator
+            state->morseString[state->length++] = ' ';
+            state->morseString[state->length++] = '/';
+            state->morseString[state->length++] = ' ';
+            state->morseString[state->length] = '\0';
+        }
+        
+        state->keyPressTime = 0.0f;
+        PlayAudioStream(*(state->stream));
+        state->isPlayingSound = true;
+        state->wasKeyPressed = true;
+        state->releaseTime = 0.0f;
+        state->letterSpaceAdded = false;
     }
-
-    return 0;
+    
+    // Track key hold duration
+    if (isKeyPressed) {
+        state->keyPressTime += deltaTime;
+    }
+    
+    // Track key release duration and handle audio
+    if (!isKeyPressed) {
+        state->releaseTime += deltaTime;
+        
+        // Check for letter gap and add space if needed
+        if (!state->letterSpaceAdded && state->releaseTime >= 3 * morseUnit && state->length > 0) {
+            if (state->length + 1 >= state->capacity) {
+                state->capacity *= 2;
+                state->morseString = realloc(state->morseString, state->capacity);
+            }
+            state->morseString[state->length++] = ' ';
+            state->morseString[state->length] = '\0';
+            state->letterSpaceAdded = true;
+        }
+        
+        if (state->isPlayingSound) {
+            StopAudioStream(*(state->stream));
+            state->isPlayingSound = false;
+        }
+    }
+    
+    // Key released - determine if it was a dot or dash
+    if (!isKeyPressed && state->wasKeyPressed) {
+        // Ensure we have space in the string
+        if (state->length + 1 >= state->capacity) {
+            state->capacity *= 2;
+            state->morseString = realloc(state->morseString, state->capacity);
+        }
+        
+        // Add dot or dash based on duration (3 units for dash)
+        if (state->keyPressTime < 3 * morseUnit) {
+            state->morseString[state->length++] = '.';
+        } else {
+            state->morseString[state->length++] = '-';
+        }
+        state->morseString[state->length] = '\0';
+        
+        state->wasKeyPressed = false;
+        state->keyPressTime = 0.0f;
+    }
 }
 
-void UpdateTimeVarsAndPlaySound(AudioStream* stream, float *heldTime, float *unheldTime, bool additionalButton)
+MorseState* createMorseState(AudioStream* stream) 
 {
-    if (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_KP_DECIMAL) || additionalButton) {
-        PlayAudioStream(*stream);
-        *heldTime += GetFrameTime();
-        *unheldTime = 0.0f;
-    }else {
-        *unheldTime += GetFrameTime();
-        StopAudioStream(*stream);
-    } 
+    MorseState* state = malloc(sizeof(MorseState));
+    state->capacity = 256;
+    state->length = 0;
+    state->morseString = malloc(state->capacity);
+    state->morseString[0] = '\0';
+    state->keyPressTime = 0.0f;
+    state->releaseTime = 0.0f;
+    state->wasKeyPressed = false;
+    state->isPlayingSound = false;
+    state->letterSpaceAdded = false;
+    state->stream = stream;
+    return state;
+}
+
+void destroyMorseState(MorseState* state) 
+{
+    if (state->isPlayingSound) {
+        StopAudioStream(*(state->stream));
+    }
+    free(state->morseString);
+    free(state);
 }
 /*-------------------------------------------------------------------------*/
 

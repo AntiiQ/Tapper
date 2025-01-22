@@ -21,6 +21,17 @@ typedef struct {
     bool  charJustPlayed;
 }MorsePlayState;
 
+typedef struct {
+    char* morseString;
+    int capacity;
+    int length;
+    float keyPressTime;
+    float releaseTime;
+    bool wasKeyPressed;
+    AudioStream* stream;
+    bool isPlayingSound;
+    bool letterSpaceAdded;
+} MorseState;
 
 /* MORSE TO CHAR */
 MorseNode* BuildMorseTree();
@@ -38,8 +49,9 @@ void InitAudio(AudioStream* stream, float volume, float pitch);
 void FreeAudio(AudioStream* stream);
 
 /* HELD INPUT TO MORSE */
-char TimeToMorse(float *heldTime, float *unheldTime, float morseUnit);
-void UpdateTimeVarsAndPlaySound(AudioStream* stream,float *heldTime, float *unheldTime, bool additionalButton);
+void updateMorseInput(MorseState* state, float morseUnit);
+MorseState* createMorseState(AudioStream* stream);
+void destroyMorseState(MorseState* state);
 
 /* MORSE TO SOUND */
 void PlayMorse(AudioStream *stream, char* morse, int len, float morseUnit, MorsePlayState* state);

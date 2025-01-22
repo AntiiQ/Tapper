@@ -27,7 +27,7 @@ int Menu(Block blocks[NUM_OF_ROWS][MAX_SIZE])
 
     while (!WindowShouldClose())
     {
-        CheckToggleFullScreen();
+        //CheckToggleFullScreen();
 
         if (buttonLesson) return 1;
         if (buttonPractice) return 2;

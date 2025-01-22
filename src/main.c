@@ -7,11 +7,19 @@
 // Iteration 1
 #include "include/utils.h"
 #include "include/menu.h"
+
 // Iteration 2
 #include "include/settings.h"
 #include "include/blocks.h"
+
 // Iteration 3
 // Morse Utils
+
+// Iteration 4
+// Morse Utils
+
+// Iteration 5
+#include "include/practice.h"
 
 // Temp
 #include "include/temp.h"
@@ -34,14 +42,14 @@ int main(void)
     InitWindow(config.screenWidth, config.screenHeight, "Tapper");
     SetExitKey(KEY_NULL); // Disables escape as a close button
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+    InitAudioDevice();
+
     GuiLoadStyleCustom();
 
     ScreenType currentScreen = 0;
 
     Block blocks[NUM_OF_ROWS][MAX_SIZE];
-
     InitAllBlocks(NUM_OF_ROWS, blocks);
-
 
     // Main loop
     while (!WindowShouldClose())    // Detect window close button
@@ -51,7 +59,7 @@ int main(void)
         switch (currentScreen)
         {
             case LESSON_SCREEN:     Lesson();               break;
-            case PRACTICE_SCREEN:   Practice();             break;
+            case PRACTICE_SCREEN:   Practice(config);       break;
             case ONLINE_SCREEN:     Online();               break;
             case STATISTICS_SCREEN: Statistics();           break;
             case SETTINGS_SCREEN:   Settings(config, blocks);       config = GetConfig();       break;
@@ -60,6 +68,7 @@ int main(void)
         }
     }
         
+    CloseAudioDevice();
     CloseWindow();
 
     return 0;

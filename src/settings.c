@@ -30,7 +30,6 @@ void Settings(Config config, Block blocks[NUM_OF_ROWS][MAX_SIZE])
 {
     int unit, titleFontSize, fontSize, guiFontSize;
 
-
     int dropdownResolutionActive;
 
     switch (config.screenHeight)
@@ -93,13 +92,12 @@ void Settings(Config config, Block blocks[NUM_OF_ROWS][MAX_SIZE])
         GuiSlider((Rectangle) {13 * unit, 21.5 * unit,  11 * unit, 1.25 * unit}, TextFormat("%.0fHz", sliderPitch), NULL, &sliderPitch, 300, 1500);
 
         DrawText("WPM:", 4 * unit, 25 * unit, fontSize, MUTED);
-        GuiSlider((Rectangle) {13 * unit, 25.5 * unit,  11 * unit, 1.25 * unit}, TextFormat("%.0fWPM", sliderWPM), NULL, &sliderWPM, 5, 50);
+        GuiSlider((Rectangle) {13 * unit, 25.5 * unit,  11 * unit, 1.25 * unit}, TextFormat("%.0fWPM", sliderWPM), NULL, &sliderWPM, 1, 50);
 
         DrawText("Resolution:", 4 * unit, 13 * unit, fontSize, MUTED);
         if (GuiDropdownBox((Rectangle) {17 * unit, 13 * unit, 6 * unit, 2* unit}, "1280x720;1600x900;1920x1080", &dropdownResolutionActive, dropdownResolutionEditMode))
             dropdownResolutionEditMode = !dropdownResolutionEditMode;
         GuiUnlock();
-
 
         if (CheckToggleFullScreen()) GetUnitSize();
         CheckDisplayFPS();
@@ -110,7 +108,7 @@ void Settings(Config config, Block blocks[NUM_OF_ROWS][MAX_SIZE])
 }
 
 Config GetConfig(void) {
-    Config dflt = (Config) {1600, 900, 0.50f, 440, 10, 1 / (10 * 5 / 6)}; // Default config
+    Config dflt = (Config) {1600, 900, 0.50f, 440, 10, 0.12}; // Default config
     Config config;
 
     FILE* file = fopen("userdata/config.bin", "rb");
